@@ -6,9 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.yakogdan.emhomework.databinding.ActivityMainBinding
+import com.yakogdan.emhomework.databinding.ActivityNetworkBinding
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -21,14 +22,16 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Path
 
-class MainActivityNet : AppCompatActivity() {
+class NetworkActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityNetworkBinding
+
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityNetworkBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -56,6 +59,13 @@ class MainActivityNet : AppCompatActivity() {
                     binding.tvTitle.text = "Error: ${it.message}"
                 },
             )
+
+        compositeDisposable.add(disposable)
+    }
+
+    override fun onDestroy() {
+        compositeDisposable.dispose()
+        super.onDestroy()
     }
 }
 
@@ -90,6 +100,5 @@ object ApiFactoryRx {
 
 @Serializable
 data class ItemDTO(
-    @SerialName("kinopoiskId") val id: Int,
     @SerialName("nameOriginal") val nameOriginal: String?,
 )

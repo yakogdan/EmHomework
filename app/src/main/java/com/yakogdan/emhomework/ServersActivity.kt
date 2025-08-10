@@ -25,10 +25,7 @@ class ServersActivity : AppCompatActivity() {
             insets
         }
 
-        // Есть 2 сервера на которых лежат скидочные карты. Нужно получить эти данные и вывести в единый список.
-
-
-        // Если 1 из запросов падает, то все равно выводить
+        // A) Если 1 из запросов падает, то все равно выводить
         val disposableA = Single.zip(
             /* source1 = */ getCardsFromServer1().onErrorReturnItem(emptyList()),
             /* source2 = */ getCardsFromServer2().onErrorReturnItem(emptyList()),
@@ -36,14 +33,13 @@ class ServersActivity : AppCompatActivity() {
                 list1 + list2
             }
         ).subscribe(
-            /* onSuccess = */ { Log.d("myTag", "Zip cards A: $it")},
-            /* onError = */ { Log.d("myTag", "Zip cards A error")},
+            /* onSuccess = */ { Log.d("myTag", "Zip cards A: $it") },
+            /* onError = */ { Log.d("myTag", "Zip cards A error") },
         )
         compositeDisposable.add(disposableA)
 
 
-
-        // Если 1 из запросов падает, то не выводить ничего
+        // Б) Если 1 из запросов падает, то не выводить ничего
         val disposableB = Single.zip(
             /* source1 = */ getCardsFromServer1(),
             /* source2 = */ getCardsFromServer2(),
@@ -51,8 +47,8 @@ class ServersActivity : AppCompatActivity() {
                 list1 + list2
             }
         ).subscribe(
-            /* onSuccess = */ { Log.d("myTag", "Zip cards B: $it")},
-            /* onError = */ { Log.d("myTag", "Zip cards B error")},
+            /* onSuccess = */ { Log.d("myTag", "Zip cards B: $it") },
+            /* onError = */ { Log.d("myTag", "Zip cards B error") },
         )
         compositeDisposable.add(disposableB)
     }
