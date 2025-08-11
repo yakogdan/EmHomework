@@ -1,4 +1,4 @@
-package com.yakogdan.emhomework
+package com.yakogdan.emhomework.rx
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

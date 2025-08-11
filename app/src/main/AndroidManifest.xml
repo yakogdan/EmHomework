@@ -15,7 +15,7 @@
         android:theme="@style/Theme.EmHomework"
         tools:targetApi="31">
         <activity
-            android:name=".ServersActivity"
+            android:name=".rx.ConflictActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
