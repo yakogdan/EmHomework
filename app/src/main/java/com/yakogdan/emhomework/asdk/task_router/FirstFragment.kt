@@ -15,6 +15,6 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentFirstBinding.bind(view)
 
-        binding.firstFragmentTextView.text = "FirstFragment"
+        binding.tvTitleFirst.text = "FirstFragment_"
     }
 }

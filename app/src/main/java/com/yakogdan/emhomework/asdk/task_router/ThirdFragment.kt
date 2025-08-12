@@ -15,6 +15,6 @@ class ThirdFragment : Fragment(R.layout.fragment_third) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentThirdBinding.bind(view)
 
-        binding.thirdFragmentTextView.text = "ThirdFragment"
+        binding.tvTitleThird.text = "ThirdFragment_"
     }
 }

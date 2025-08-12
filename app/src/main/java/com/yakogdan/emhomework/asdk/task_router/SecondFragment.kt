@@ -15,6 +15,6 @@ class SecondFragment : Fragment(R.layout.fragment_second) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentSecondBinding.bind(view)
 
-        binding.secondFragmentTextView.text = "SecondFragment"
+        binding.tvTitleSecond.text = "SecondFragment_"
     }
 }
