@@ -15,6 +15,12 @@ class SecondFragment : Fragment(R.layout.fragment_second) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentSecondBinding.bind(view)
 
-        binding.tvTitleSecond.text = "SecondFragment_"
+        binding.btnNextSecond.setOnClickListener {
+            router.navigateTo(ThirdFragment())
+        }
+
+        binding.btnPreviousSecond.setOnClickListener {
+            router.back()
+        }
     }
 }

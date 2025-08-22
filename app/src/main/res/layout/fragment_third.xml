@@ -10,10 +10,11 @@
         android:id="@+id/tvTitleThird"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="ThirdFragment"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="ThirdFragment" />
+        tools:ignore="HardcodedText" />
 
     <Button
         android:id="@+id/btnPreviousThird"

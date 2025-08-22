@@ -7,10 +7,17 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.yakogdan.emhomework.databinding.ActivityRouterBinding
 
-class RouterActivity : AppCompatActivity() {
+class RouterActivity : AppCompatActivity(), RouterProvider {
 
     private var _binding: ActivityRouterBinding? = null
     private val binding get() = _binding!!
+
+    override val router by lazy {
+        Router(
+            fragmentManager = supportFragmentManager,
+            containerId = binding.FragmentContainerView.id,
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,9 +31,7 @@ class RouterActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(binding.FragmentContainerView.id, ThirdFragment())
-                .commit()
+            router.newRootScreen(FirstFragment())
         }
     }
 }
