@@ -15,7 +15,7 @@
         android:theme="@style/Theme.EmHomework"
         tools:targetApi="31">
         <activity
-            android:name=".asdk.task_router.RouterActivity"
+            android:name=".asdk.task_work_manager.WmActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
