@@ -60,7 +60,7 @@ class FillProgressView @JvmOverloads constructor(
                 )
                 borderColor = typedArray.getColor(
                     /* index = */ R.styleable.FillProgressView_borderColor,
-                    /* defValue = */ Color.DKGRAY
+                    /* defValue = */ DEFAULT_BORDER_COLOR
                 )
                 borderWidthPx = typedArray.getDimension(
                     /* index = */ R.styleable.FillProgressView_borderWidth,
