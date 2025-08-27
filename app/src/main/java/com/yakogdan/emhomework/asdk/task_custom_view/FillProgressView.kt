@@ -9,28 +9,27 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.ColorInt
+import androidx.core.graphics.withClip
 import com.yakogdan.emhomework.R
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.random.Random
 
 class FillProgressView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : View(context, attrs, defStyleAttr) {
 
-    private var stepPercent: Int = 10
-    private var cornerRadiusPx: Float = 8f.dpToPx()
-    private var borderWidthPx: Float = 2f.dpToPx()
+    private var progressPercent: Int = 0
+
+    private var stepPercent: Int = DEFAULT_STEP_PERCENT
+    private var cornerRadiusPx: Float = DEFAULT_CORNER_RADIUS_DP.dpToPx()
+    private var borderWidthPx: Float = DEFAULT_BORDER_WIDTH_DP.dpToPx()
 
     @ColorInt
-    private var borderColor: Int = Color.DKGRAY
-
-    private var progressPercent: Int = 0
+    private var borderColor: Int = DEFAULT_BORDER_COLOR
 
     @ColorInt
     private var fillColor: Int = randomColor()
@@ -44,127 +43,124 @@ class FillProgressView @JvmOverloads constructor(
 
     private val contentRect = RectF()
 
-    private var isTouchDown = false
-
     init {
         isClickable = true
 
         if (attrs != null) {
-            val a =
-                context.obtainStyledAttributes(attrs, R.styleable.FillProgressView, defStyleAttr, 0)
+            val typedArray = context.obtainStyledAttributes(
+                /* set = */ attrs,
+                /* attrs = */ R.styleable.FillProgressView,
+                /* defStyleAttr = */ defStyleAttr,
+                /* defStyleRes = */ 0
+            )
             try {
-                stepPercent = a.getInt(R.styleable.FillProgressView_stepPercent, 10)
-                borderColor = a.getColor(R.styleable.FillProgressView_borderColor, Color.DKGRAY)
-                borderWidthPx =
-                    a.getDimension(R.styleable.FillProgressView_borderWidth, 2f.dpToPx())
-                cornerRadiusPx = a.getDimension(
-                    R.styleable.FillProgressView_cornerRadius,
-                    8f.dpToPx()
+                stepPercent = typedArray.getInt(
+                    /* index = */ R.styleable.FillProgressView_stepPercent,
+                    /* defValue = */ DEFAULT_STEP_PERCENT
                 )
-                progressPercent = a
+                borderColor = typedArray.getColor(
+                    /* index = */ R.styleable.FillProgressView_borderColor,
+                    /* defValue = */ Color.DKGRAY
+                )
+                borderWidthPx = typedArray.getDimension(
+                    /* index = */ R.styleable.FillProgressView_borderWidth,
+                    /* defValue = */ DEFAULT_BORDER_WIDTH_DP.dpToPx()
+                )
+                cornerRadiusPx = typedArray.getDimension(
+                    /* index = */ R.styleable.FillProgressView_cornerRadius,
+                    /* defValue = */ DEFAULT_CORNER_RADIUS_DP.dpToPx()
+                )
+                progressPercent = typedArray
                     .getInt(R.styleable.FillProgressView_initialProgress, 0)
                     .coerceIn(0, 100)
 
             } finally {
-                a.recycle()
+                typedArray.recycle()
             }
         }
 
         borderPaint.color = borderColor
         borderPaint.strokeWidth = borderWidthPx
         fillPaint.color = fillColor
-
-        updateContentDescription()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val desiredW = 200f.dpToPx().toInt()
-        val desiredH = 32f.dpToPx().toInt()
+        val desiredWidth = 250f.dpToPx().toInt()
+        val desiredHeight = 50f.dpToPx().toInt()
 
-        val width = resolveSize(desiredW, widthMeasureSpec)
-        val height = resolveSize(desiredH, heightMeasureSpec)
-        setMeasuredDimension(width, height)
+        val width = resolveSize(desiredWidth, widthMeasureSpec)
+        val height = resolveSize(desiredHeight, heightMeasureSpec)
+
+        setMeasuredDimension(
+            /* measuredWidth = */ width,
+            /* measuredHeight = */ height,
+        )
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         val left = paddingLeft.toFloat() + borderWidthPx / 2f
-        val top = paddingTop.toFloat() + borderWidthPx / 2f
         val right = (w - paddingRight).toFloat() - borderWidthPx / 2f
+        val top = paddingTop.toFloat() + borderWidthPx / 2f
         val bottom = (h - paddingBottom).toFloat() - borderWidthPx / 2f
-        contentRect.set(left, top, max(left, right), max(top, bottom))
+
+        contentRect.set(
+            /* left = */ left,
+            /* top = */ top,
+            /* right = */ max(left, right),
+            /* bottom = */ max(top, bottom)
+        )
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        val percent = progressPercent
 
-        val pct = progressPercent
-        if (pct > 0) {
-            val clipRight = contentRect.left + contentRect.width() * (pct / 100f)
-            val save = canvas.save()
-            canvas.clipRect(contentRect.left, contentRect.top, clipRight, contentRect.bottom)
-            canvas.drawRoundRect(contentRect, cornerRadiusPx, cornerRadiusPx, fillPaint)
-            canvas.restoreToCount(save)
-        }
+        if (percent > 0) {
+            val clipRight = contentRect.left + contentRect.width() * (percent / 100f)
 
-        canvas.drawRoundRect(contentRect, cornerRadiusPx, cornerRadiusPx, borderPaint)
-    }
-
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (!isEnabled) return false
-
-        when (event.actionMasked) {
-            MotionEvent.ACTION_DOWN -> {
-                isTouchDown = true
-                parent?.requestDisallowInterceptTouchEvent(true)
-                return true
-            }
-
-            MotionEvent.ACTION_UP -> {
-                if (isTouchDown && isWithinView(event.x, event.y)) {
-                    isTouchDown = false
-                    performClick()
-                    return true
-                }
-                isTouchDown = false
-            }
-
-            MotionEvent.ACTION_CANCEL -> {
-                isTouchDown = false
+            canvas.withClip(
+                left = contentRect.left,
+                top = contentRect.top,
+                right = clipRight,
+                bottom = contentRect.bottom,
+            ) {
+                drawRoundRect(
+                    /* rect = */ contentRect,
+                    /* rx = */ cornerRadiusPx,
+                    /* ry = */ cornerRadiusPx,
+                    /* paint = */ fillPaint,
+                )
             }
         }
-        return super.onTouchEvent(event)
+
+        canvas.drawRoundRect(
+            /* rect = */ contentRect,
+            /* rx = */ cornerRadiusPx,
+            /* ry = */ cornerRadiusPx,
+            /* paint = */ borderPaint,
+        )
     }
 
     override fun performClick(): Boolean {
-        advanceProgressAndColor()
+        setNewProgressAndRandomColor()
         return super.performClick()
     }
 
-    private fun isWithinView(x: Float, y: Float): Boolean {
-        return x >= 0f && x <= width && y >= 0f && y <= height
-    }
-
-    private fun advanceProgressAndColor() {
-        val newVal = progressPercent + stepPercent
-        progressPercent = if (newVal > 100) 0 else min(100, newVal)
+    private fun setNewProgressAndRandomColor() {
+        val newValue = progressPercent + stepPercent
+        progressPercent = if (newValue > 100) 0 else newValue
 
         fillColor = randomColor()
         fillPaint.color = fillColor
 
-        updateContentDescription()
         invalidate()
     }
 
-    private fun updateContentDescription() {
-        contentDescription = "${progressPercent}%"
-    }
-
     fun setProgressPercent(value: Int) {
-        val clamped = value.coerceIn(0, 100)
-        if (clamped != progressPercent) {
-            progressPercent = clamped
-            updateContentDescription()
+        val newValue = value.coerceIn(0, 100)
+        if (newValue != progressPercent) {
+            progressPercent = newValue
             invalidate()
         }
     }
@@ -174,7 +170,6 @@ class FillProgressView @JvmOverloads constructor(
     fun reset() {
         if (progressPercent != 0) {
             progressPercent = 0
-            updateContentDescription()
             invalidate()
         }
     }
@@ -195,51 +190,50 @@ class FillProgressView @JvmOverloads constructor(
         }
     }
 
-    fun setBorderWidthPx(widthPx: Float) {
-        val newW = max(0f, widthPx)
-        if (borderWidthPx != newW) {
-            borderWidthPx = newW
-            borderPaint.strokeWidth = newW
+    fun setBorderWidthDp(width: Float) {
+        val newWidth = max(0f, width.dpToPx())
+        if (borderWidthPx != newWidth) {
+            borderWidthPx = newWidth
+            borderPaint.strokeWidth = newWidth
             requestLayout()
             invalidate()
         }
     }
 
-    fun setCornerRadiusPx(radiusPx: Float) {
-        val r = max(0f, radiusPx)
-        if (cornerRadiusPx != r) {
-            cornerRadiusPx = r
+    fun setCornerRadiusDp(radius: Float) {
+        val newRadius = max(0f, radius.dpToPx())
+        if (cornerRadiusPx != newRadius) {
+            cornerRadiusPx = newRadius
             invalidate()
         }
     }
 
     override fun onSaveInstanceState(): Parcelable {
         val superState = super.onSaveInstanceState()
-        val ss = SavedState(superState)
-        ss.progress = progressPercent
-        ss.step = stepPercent
-        ss.fillColor = fillColor
-        ss.borderColor = borderColor
-        ss.borderWidthPx = borderWidthPx
-        ss.cornerRadiusPx = cornerRadiusPx
-        return ss
+        val savedState = SavedState(superState)
+        savedState.progressPercent = progressPercent
+        savedState.stepPercent = stepPercent
+        savedState.cornerRadiusPx = cornerRadiusPx
+        savedState.borderWidthPx = borderWidthPx
+        savedState.borderColor = borderColor
+        savedState.fillColor = fillColor
+        return savedState
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
         if (state is SavedState) {
             super.onRestoreInstanceState(state.superState)
-            progressPercent = state.progress.coerceIn(0, 100)
-            stepPercent = state.step
-            fillColor = state.fillColor
-            borderColor = state.borderColor
-            borderWidthPx = state.borderWidthPx
+            progressPercent = state.progressPercent.coerceIn(0, 100)
+            stepPercent = state.stepPercent
             cornerRadiusPx = state.cornerRadiusPx
+            borderWidthPx = state.borderWidthPx
+            borderColor = state.borderColor
+            fillColor = state.fillColor
 
             fillPaint.color = fillColor
             borderPaint.color = borderColor
             borderPaint.strokeWidth = borderWidthPx
 
-            updateContentDescription()
             requestLayout()
             invalidate()
         } else {
@@ -247,29 +241,31 @@ class FillProgressView @JvmOverloads constructor(
         }
     }
 
-    private class SavedState : BaseSavedState {
-        var progress: Int = 0
-        var step: Int = 10
-        var fillColor: Int = Color.GREEN
-        var borderColor: Int = Color.DKGRAY
-        var borderWidthPx: Float = 0f
-        var cornerRadiusPx: Float = 0f
-
-        constructor(superState: Parcelable?) : super(superState)
+    private inner class SavedState(superState: Parcelable?) : BaseSavedState(superState) {
+        var progressPercent: Int = 0
+        var stepPercent: Int = DEFAULT_STEP_PERCENT
+        var cornerRadiusPx: Float = DEFAULT_CORNER_RADIUS_DP.dpToPx()
+        var borderWidthPx: Float = DEFAULT_BORDER_WIDTH_DP.dpToPx()
+        var borderColor: Int = DEFAULT_BORDER_COLOR
+        var fillColor: Int = randomColor()
 
         override fun writeToParcel(out: Parcel, flags: Int) {
             super.writeToParcel(out, flags)
-            out.writeInt(progress)
-            out.writeInt(step)
-            out.writeInt(fillColor)
-            out.writeInt(borderColor)
-            out.writeFloat(borderWidthPx)
+            out.writeInt(progressPercent)
+            out.writeInt(stepPercent)
             out.writeFloat(cornerRadiusPx)
+            out.writeFloat(borderWidthPx)
+            out.writeInt(borderColor)
+            out.writeInt(fillColor)
         }
     }
 
     private fun Float.dpToPx(): Float =
-        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, resources.displayMetrics)
+        TypedValue.applyDimension(
+            /* unit = */ TypedValue.COMPLEX_UNIT_DIP,
+            /* value = */ this,
+            /* metrics = */ resources.displayMetrics,
+        )
 
     @ColorInt
     private fun randomColor(): Int {
@@ -277,5 +273,12 @@ class FillProgressView @JvmOverloads constructor(
         val g = Random.nextInt(0, 256)
         val b = Random.nextInt(0, 256)
         return Color.rgb(r, g, b)
+    }
+
+    companion object {
+        private const val DEFAULT_STEP_PERCENT = 10
+        private const val DEFAULT_CORNER_RADIUS_DP = 10f
+        private const val DEFAULT_BORDER_WIDTH_DP = 2f
+        private const val DEFAULT_BORDER_COLOR = Color.DKGRAY
     }
 }
