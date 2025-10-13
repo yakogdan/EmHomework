@@ -16,7 +16,7 @@
         android:theme="@style/Theme.EmHomework"
         tools:targetApi="31">
         <activity
-            android:name=".asdk.task_custom_view.CustomViewActivity"
+            android:name=".db_network_pattern.task_flower_shop.FlowerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
