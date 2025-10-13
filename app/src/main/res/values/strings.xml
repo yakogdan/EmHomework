@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">EmHomework</string>
+    <string name="previous">Предыдущий</string>
+    <string name="next">Следующий</string>
 </resources>

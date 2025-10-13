@@ -1,0 +1,9 @@
+<resources>
+    <declare-styleable name="FillProgressView">
+        <attr name="stepPercent" format="integer" />
+        <attr name="borderColor" format="color" />
+        <attr name="borderWidth" format="dimension" />
+        <attr name="cornerRadius" format="dimension" />
+        <attr name="initialProgress" format="integer" />
+    </declare-styleable>
+</resources>
