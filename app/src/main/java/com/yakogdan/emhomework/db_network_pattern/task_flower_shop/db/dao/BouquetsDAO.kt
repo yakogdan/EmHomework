@@ -11,7 +11,10 @@ import com.yakogdan.emhomework.db_network_pattern.task_flower_shop.db.dbo.Bouque
 interface BouquetsDAO {
 
     @Query("SELECT * FROM $TABLE_NAME")
-    fun getBouquets(): List<BouquetDBO>
+    suspend fun getBouquets(): List<BouquetDBO>
+
+    @Query("SELECT * FROM $TABLE_NAME WHERE id = :id")
+    suspend fun getBouquet(id: Int): BouquetDBO
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addBouquets(bouquets: List<BouquetDBO>)

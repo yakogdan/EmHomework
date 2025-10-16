@@ -74,6 +74,13 @@ class FlowerActivity : AppCompatActivity() {
         appDatabase.bouquetDao()
     }
 
+    val getBouquetQuantityUseCase by lazy {
+        GetBouquetQuantityUseCase(
+            bouquetsDAO = bouquetsDao,
+            flowersDAO = flowersDao,
+        )
+    }
+
     private var _binding: ActivityFlowerBinding? = null
     private val binding get() = _binding!!
 
@@ -130,9 +137,17 @@ class FlowerActivity : AppCompatActivity() {
         binding.btnGetBouquets.setOnClickListener {
 
             lifecycleScope.launch(Dispatchers.IO) {
-                val data = bouquetsDao.getBouquets().map { it.bouquetName }.toString()
+                val data = bouquetsDao
+                    .getBouquets()
+                    .map { bouquet ->
+                        val remainingQuantity =
+                            getBouquetQuantityUseCase.invoke(bouquetId = bouquet.id)
+
+                        "${bouquet.bouquetName} - осталось: $remainingQuantity"
+                    }
+
                 withContext(Dispatchers.Main) {
-                    binding.tvBouquet.text = data
+                    binding.tvBouquet.text = data.toString()
                 }
             }
         }

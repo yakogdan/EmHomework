@@ -11,11 +11,14 @@ import com.yakogdan.emhomework.db_network_pattern.task_flower_shop.db.dbo.Flower
 interface FlowersDAO {
 
     @Query("SELECT * FROM $TABLE_NAME")
-    fun getFlowers(): List<FlowersDBO>
+    suspend fun getFlowers(): List<FlowersDBO>
+
+    @Query("SELECT * FROM $TABLE_NAME WHERE id = :id")
+    suspend fun getFlower(id: Int): FlowersDBO
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addFlowers(flowers: List<FlowersDBO>)
 
     @Query("UPDATE $TABLE_NAME SET remaining_quantity = remaining_quantity - :flowersQuantity WHERE id = :flowerId")
-    fun removeFlowers(flowerId: Int, flowersQuantity: Int)
+    suspend fun removeFlowers(flowerId: Int, flowersQuantity: Int)
 }
