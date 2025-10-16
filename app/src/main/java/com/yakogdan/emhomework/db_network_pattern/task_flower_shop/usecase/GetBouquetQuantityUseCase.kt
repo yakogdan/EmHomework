@@ -1,4 +1,4 @@
-package com.yakogdan.emhomework.db_network_pattern.task_flower_shop
+package com.yakogdan.emhomework.db_network_pattern.task_flower_shop.usecase
 
 import com.yakogdan.emhomework.db_network_pattern.task_flower_shop.db.dao.BouquetsDAO
 import com.yakogdan.emhomework.db_network_pattern.task_flower_shop.db.dao.FlowersDAO

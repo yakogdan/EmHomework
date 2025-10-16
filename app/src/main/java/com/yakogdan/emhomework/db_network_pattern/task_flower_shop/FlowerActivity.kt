@@ -12,6 +12,8 @@ import com.yakogdan.emhomework.db_network_pattern.task_flower_shop.db.dao.Bouque
 import com.yakogdan.emhomework.db_network_pattern.task_flower_shop.db.dao.FlowersDAO
 import com.yakogdan.emhomework.db_network_pattern.task_flower_shop.db.dbo.BouquetDBO
 import com.yakogdan.emhomework.db_network_pattern.task_flower_shop.db.dbo.FlowersDBO
+import com.yakogdan.emhomework.db_network_pattern.task_flower_shop.usecase.BuyBouquetUseCase
+import com.yakogdan.emhomework.db_network_pattern.task_flower_shop.usecase.GetBouquetQuantityUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -19,16 +21,16 @@ import kotlinx.coroutines.withContext
 class FlowerActivity : AppCompatActivity() {
 
     val popularFlowers: List<FlowersDBO> = listOf(
-        FlowersDBO(id = 1, name = "Роза", remainingQuantity = 120),
-        FlowersDBO(id = 2, name = "Тюльпан", remainingQuantity = 80),
-        FlowersDBO(id = 3, name = "Лилия", remainingQuantity = 36),
-        FlowersDBO(id = 4, name = "Хризантема", remainingQuantity = 64),
-        FlowersDBO(id = 5, name = "Гвоздика", remainingQuantity = 48),
-        FlowersDBO(id = 6, name = "Гербера", remainingQuantity = 42),
-        FlowersDBO(id = 7, name = "Альстромерия", remainingQuantity = 55),
-        FlowersDBO(id = 8, name = "Эустома", remainingQuantity = 30),
-        FlowersDBO(id = 9, name = "Пион", remainingQuantity = 24),
-        FlowersDBO(id = 10, name = "Гортензия", remainingQuantity = 18)
+        FlowersDBO(id = 1, name = "Роза", remainingQuantity = 100),
+        FlowersDBO(id = 2, name = "Тюльпан", remainingQuantity = 100),
+        FlowersDBO(id = 3, name = "Лилия", remainingQuantity = 100),
+        FlowersDBO(id = 4, name = "Хризантема", remainingQuantity = 100),
+        FlowersDBO(id = 5, name = "Гвоздика", remainingQuantity = 100),
+        FlowersDBO(id = 6, name = "Гербера", remainingQuantity = 100),
+        FlowersDBO(id = 7, name = "Альстромерия", remainingQuantity = 100),
+        FlowersDBO(id = 8, name = "Эустома", remainingQuantity = 100),
+        FlowersDBO(id = 9, name = "Пион", remainingQuantity = 100),
+        FlowersDBO(id = 10, name = "Гортензия", remainingQuantity = 100)
     )
 
     val bouquets: List<BouquetDBO> = listOf(
@@ -81,6 +83,10 @@ class FlowerActivity : AppCompatActivity() {
         )
     }
 
+    val buyBouquetUseCase by lazy {
+        BuyBouquetUseCase(flowersDAO = flowersDao)
+    }
+
     private var _binding: ActivityFlowerBinding? = null
     private val binding get() = _binding!!
 
@@ -110,20 +116,7 @@ class FlowerActivity : AppCompatActivity() {
         binding.btnGetFlowers.setOnClickListener {
 
             lifecycleScope.launch(Dispatchers.IO) {
-                val data = flowersDao
-                    .getFlowers()
-                    .map { "${it.name} ${it.remainingQuantity}" }
-                    .toString()
-
-                withContext(Dispatchers.Main) {
-                    binding.tvFlower.text = data
-                }
-            }
-        }
-
-        binding.btnRemoveFlowers.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                flowersDao.removeFlowers(flowerId = 1, flowersQuantity = 5)
+                loadAndShowFlowers()
             }
         }
 
@@ -137,19 +130,58 @@ class FlowerActivity : AppCompatActivity() {
         binding.btnGetBouquets.setOnClickListener {
 
             lifecycleScope.launch(Dispatchers.IO) {
-                val data = bouquetsDao
-                    .getBouquets()
-                    .map { bouquet ->
-                        val remainingQuantity =
-                            getBouquetQuantityUseCase.invoke(bouquetId = bouquet.id)
-
-                        "${bouquet.bouquetName} - осталось: $remainingQuantity"
-                    }
-
-                withContext(Dispatchers.Main) {
-                    binding.tvBouquet.text = data.toString()
-                }
+                loadAndShowBouquets()
             }
+        }
+
+        binding.btnBuyBouquet1.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                buyBouquetUseCase.invoke(bouquets[0])
+                loadAndShowFlowers()
+                loadAndShowBouquets()
+            }
+        }
+
+        binding.btnBuyBouquet2.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                buyBouquetUseCase.invoke(bouquets[1])
+                loadAndShowFlowers()
+                loadAndShowBouquets()
+            }
+        }
+
+        binding.btnBuyBouquet3.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                buyBouquetUseCase.invoke(bouquets[2])
+                loadAndShowFlowers()
+                loadAndShowBouquets()
+            }
+        }
+    }
+
+    private suspend fun loadAndShowFlowers() {
+        val data = flowersDao
+            .getFlowers()
+            .map { "${it.name} ${it.remainingQuantity}" }
+            .toString()
+
+        withContext(Dispatchers.Main) {
+            binding.tvFlower.text = data
+        }
+    }
+
+    private suspend fun loadAndShowBouquets() {
+        val data = bouquetsDao
+            .getBouquets()
+            .map { bouquet ->
+                val remainingQuantity =
+                    getBouquetQuantityUseCase.invoke(bouquetId = bouquet.id)
+
+                "${bouquet.bouquetName} - осталось: $remainingQuantity"
+            }
+
+        withContext(Dispatchers.Main) {
+            binding.tvBouquet.text = data.toString()
         }
     }
 }
