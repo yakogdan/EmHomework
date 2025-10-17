@@ -1,6 +1,7 @@
 package com.yakogdan.emhomework.db_network_pattern.task_flower_shop
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -145,7 +146,10 @@ class FlowerActivity : AppCompatActivity() {
 
         binding.btnBuyBouquet1.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
-                buyBouquetUseCase.invoke(bouquets[0])
+
+                val isSuccessful = buyBouquetUseCase.invoke(bouquets[0])
+                showToastOnUnsuccessfulPurchase(isSuccessful)
+
                 loadAndShowFlowers()
                 loadAndShowBouquets()
             }
@@ -153,7 +157,10 @@ class FlowerActivity : AppCompatActivity() {
 
         binding.btnBuyBouquet2.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
-                buyBouquetUseCase.invoke(bouquets[1])
+
+                val isSuccessful = buyBouquetUseCase.invoke(bouquets[1])
+                showToastOnUnsuccessfulPurchase(isSuccessful)
+
                 loadAndShowFlowers()
                 loadAndShowBouquets()
             }
@@ -161,9 +168,24 @@ class FlowerActivity : AppCompatActivity() {
 
         binding.btnBuyBouquet3.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
-                buyBouquetUseCase.invoke(bouquets[2])
+
+                val isSuccessful = buyBouquetUseCase.invoke(bouquets[2])
+                showToastOnUnsuccessfulPurchase(isSuccessful)
+
                 loadAndShowFlowers()
                 loadAndShowBouquets()
+            }
+        }
+    }
+
+    private suspend fun showToastOnUnsuccessfulPurchase(isSuccessful: Boolean) {
+        if (!isSuccessful) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@FlowerActivity,
+                    "Ошибка покупки букета",
+                    Toast.LENGTH_SHORT,
+                ).show()
             }
         }
     }

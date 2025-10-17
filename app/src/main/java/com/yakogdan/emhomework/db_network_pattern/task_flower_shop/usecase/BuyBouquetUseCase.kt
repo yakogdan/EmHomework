@@ -7,12 +7,6 @@ class BuyBouquetUseCase(
     private val flowersDAO: FlowersDAO,
 ) {
 
-    suspend fun invoke(bouquet: BouquetDBO) {
-        bouquet.bouquetComponents.forEach { pair ->
-            flowersDAO.removeFlowers(
-                flowerId = pair.first.id,
-                flowersQuantity = pair.second,
-            )
-        }
-    }
+    suspend fun invoke(bouquet: BouquetDBO): Boolean =
+        flowersDAO.buyBouquet(bouquetComponents = bouquet.bouquetComponents)
 }
