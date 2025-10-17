@@ -106,6 +106,15 @@ class FlowerActivity : AppCompatActivity() {
             insets
         }
 
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (savedInstanceState == null) {
+                flowersDao.addFlowers(flowers = popularFlowers)
+                bouquetsDao.addBouquets(bouquets = bouquets)
+            }
+            loadAndShowFlowers()
+            loadAndShowBouquets()
+        }
+
         binding.btnAddFlowers.setOnClickListener {
 
             lifecycleScope.launch(Dispatchers.IO) {
