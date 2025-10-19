@@ -6,6 +6,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.create
@@ -30,12 +31,19 @@ object KinoApiFactory {
 
     private const val BASE_URL = "https://kinopoiskapiunofficial.tech/"
 
+    private val loggingInterceptor = StatusCodeLoggingInterceptor()
+
+    private val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor)
+        .build()
+
     private val json: Json = Json { ignoreUnknownKeys = true }
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+        .client(okHttpClient)
         .build()
 
     val apiService: KinoApiService = retrofit.create()
