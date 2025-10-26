@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context=".db_network_pattern.db_test.AuthorBookActivity">
+
+    <TextView
+        android:id="@+id/tvAuthorBook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AuthorBookActivity"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/btnAddAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Add Author"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/btnAddBook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Add Book"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/btnDeleteAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Delete Author"
+        tools:ignore="HardcodedText" />
+
+</LinearLayout>
