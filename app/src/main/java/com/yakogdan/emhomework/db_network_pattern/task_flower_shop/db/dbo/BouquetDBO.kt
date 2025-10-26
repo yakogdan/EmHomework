@@ -13,6 +13,8 @@ data class BouquetDBO(
     val bouquetName: String,
     @ColumnInfo(name = "bouquet_components")
     val bouquetComponents: List<Pair<FlowersDBO, Int>>,
+    @ColumnInfo(name = "wrapping")
+    val wrapping: String = "none",
 ) {
     companion object {
         const val TABLE_NAME = "bouquet_table"

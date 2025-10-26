@@ -15,6 +15,8 @@ data class FlowersDBO(
     val name: String,
     @ColumnInfo(name = "remaining_quantity")
     val remainingQuantity: Int = 0,
+    @ColumnInfo(name = "country_of_origin")
+    val countryOfOrigin: String = "unknown",
 ) {
     companion object {
         const val TABLE_NAME = "flowers_table"

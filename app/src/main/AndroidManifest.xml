@@ -15,8 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EmHomework"
         tools:targetApi="31">
+
         <activity
-            android:name=".db_network_pattern.task_flower_shop.FlowerActivity"
+            android:name=".db_network_pattern.task_log_interceptor.InterceptorActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
