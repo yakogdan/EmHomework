@@ -21,8 +21,8 @@ import androidx.room.PrimaryKey
     ]
 )
 data class BookDBO(
-    @PrimaryKey(autoGenerate = true)
-    val bookId: Long = 0,
+    @PrimaryKey
+    val bookId: Long,
     val title: String,
     val authorOwnerId: Long
 ) {
